@@ -8,6 +8,7 @@
 
 enum TokenType {
     COMMENT,
+    MATH_KEYWORD,
     RAW_STRING_LITERAL_START,
     RAW_STRING_LITERAL_CONTENT,
     RAW_STRING_LITERAL_END,
@@ -189,6 +190,39 @@ static inline bool scan_comment(TSLexer *lexer, bool start_of_line) {
     return true;
 }
 
+// Infinities and Nan
+
+static inline bool scan_inf(TSLexer *lexer) {
+    if (test_char_range(lexer->lookahead, "+-"))
+        advance(lexer);
+
+    if (!test_word(lexer, "inf", false))
+        return false;
+
+    if (test_char_range(lexer->lookahead, "iI")) {
+        advance(lexer);
+        if (!test_word(lexer, "nity", false))
+            return false;
+    };
+
+    if (!common_terminator(lexer))
+        return false;
+
+    lexer->result_symbol = MATH_KEYWORD;
+    return true;
+}
+
+static inline bool scan_nan(TSLexer *lexer) {
+    if (!test_word(lexer, "nan", false))
+        return false;
+
+    if (!common_terminator(lexer))
+        return false;
+
+    lexer->result_symbol = MATH_KEYWORD;
+    return true;
+}
+
 // Tree-sitter scanner object
 
 bool tree_sitter_nu_external_scanner_scan(void *payload, TSLexer *lexer,
@@ -231,6 +265,15 @@ bool tree_sitter_nu_external_scanner_scan(void *payload, TSLexer *lexer,
     }
 
     bool start_of_line = (lexer->get_column(lexer) == 0);
+
+    if (valid_symbols[MATH_KEYWORD] &&
+        test_char_range(lexer->lookahead, "+-iI")) {
+        return scan_inf(lexer);
+    }
+    if (valid_symbols[MATH_KEYWORD] &&
+        test_char_range(lexer->lookahead, "nN")) {
+        return scan_nan(lexer);
+    }
 
     if (valid_symbols[COMMENT] && (lexer->lookahead == ' ' || start_of_line)) {
         return scan_comment(lexer, start_of_line);

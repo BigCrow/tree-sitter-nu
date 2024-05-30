@@ -9,6 +9,7 @@ module.exports = grammar({
 
   externals: ($) => [
     $.comment,
+    $.math_keyword,
     $._raw_string_literal_start,
     $.raw_string_literal_content,
     $._raw_string_literal_end,
@@ -958,9 +959,7 @@ module.exports = grammar({
         /0x[0-9a-fA-F_]+/,
         /0b[01_]+/,
         /0o[0-7_]+/,
-        SPECIAL().pos_infinity,
-        SPECIAL().neg_infinity,
-        SPECIAL().not_a_number,
+        $.math_keyword,
       ),
 
     val_duration: ($) =>
@@ -1629,12 +1628,7 @@ function _unquoted_rule(in_list) {
 
         // distinguish between $.val_number and unquoted string starting with numeric characters
         seq(
-          choice(
-            $._val_number_decimal,
-            token(SPECIAL().pos_infinity),
-            token(SPECIAL().neg_infinity),
-            token(SPECIAL().not_a_number),
-          ),
+          choice($._val_number_decimal),
           token.immediate(pattern_once),
           token.immediate(pattern_repeat),
         ),
@@ -1647,7 +1641,7 @@ function _unquoted_rule(in_list) {
           $._immediate_decimal,
           token.immediate(PUNC().dot),
           $._immediate_decimal,
-          token.immediate(pattern_repeat1),
+          repeat(seq(PUNC().dot, /\d/)), // Fix grabbing mulitple lines
         ),
       ),
     );
@@ -1891,10 +1885,6 @@ function SPECIAL() {
     true: "true",
     false: "false",
     null: "null",
-
-    pos_infinity: /[iI][nN][fF]([iI][nN][iI][tT][yY])?/,
-    neg_infinity: /-[iI][nN][fF]([iI][nN][iI][tT][yY])?/,
-    not_a_number: /[nN][aA][nN]/,
   };
 }
 
