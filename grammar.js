@@ -8,6 +8,7 @@ module.exports = grammar({
   extras: ($) => [/\s/, $.comment],
 
   externals: ($) => [
+    $.comment,
     $._raw_string_literal_start,
     $.raw_string_literal_content,
     $._raw_string_literal_end,
@@ -1316,10 +1317,6 @@ module.exports = grammar({
 
     unquoted: _unquoted_rule(false),
     _unquoted_in_list: _unquoted_rule(true),
-
-    /// Comments
-
-    comment: (_$) => seq(PUNC().hash, /.*/),
   },
 });
 

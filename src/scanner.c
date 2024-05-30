@@ -7,6 +7,7 @@
 // Tree-sitter objects
 
 enum TokenType {
+    COMMENT,
     RAW_STRING_LITERAL_START,
     RAW_STRING_LITERAL_CONTENT,
     RAW_STRING_LITERAL_END,
@@ -46,6 +47,8 @@ void tree_sitter_nu_external_scanner_deserialize(void *payload,
 // Utility functions
 
 static inline void advance(TSLexer *lexer) { lexer->advance(lexer, false); }
+
+static inline void skip(TSLexer *lexer) { lexer->advance(lexer, true); }
 
 // Raw string functions
 
@@ -114,6 +117,23 @@ static inline bool scan_raw_string_end(Scanner *scanner, TSLexer *lexer) {
     return true;
 }
 
+// Comment
+
+static inline bool scan_comment(TSLexer *lexer) {
+    while (lexer->lookahead == ' ')
+        skip(lexer);
+
+    if (lexer->lookahead != '#')
+        return false;
+    advance(lexer);
+
+    while (lexer->lookahead != '\n' && !lexer->eof(lexer)) {
+        advance(lexer);
+    }
+    lexer->result_symbol = COMMENT;
+    return true;
+}
+
 // Tree-sitter scanner object
 
 bool tree_sitter_nu_external_scanner_scan(void *payload, TSLexer *lexer,
@@ -153,6 +173,11 @@ bool tree_sitter_nu_external_scanner_scan(void *payload, TSLexer *lexer,
     if (valid_symbols[RAW_STRING_LITERAL_END] &&
         lexer->lookahead == RAW_STRING_QUOTE_CHAR) {
         return scan_raw_string_end(scanner, lexer);
+    }
+
+    if (valid_symbols[COMMENT] &&
+        (lexer->lookahead == ' ' || lexer->get_column(lexer) == 0)) {
+        return scan_comment(lexer);
     }
 
     return false;
