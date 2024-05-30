@@ -1273,14 +1273,17 @@ module.exports = grammar({
       ),
 
     _cmd_arg: ($) =>
-      choice(
-        field("redir", prec.right(10, $.redirection)),
-        field("flag", prec.right(9, $._flag)),
-        field("arg", prec.right(8, $._value)),
-        field("arg", prec.right(8, $.val_range)),
-        field("arg", prec.right(7, $.expr_parenthesized)),
-        // lowest precedence to make it a last resort
-        field("arg_str", alias($.unquoted, $.val_string)),
+      seq(
+        /\s/,
+        choice(
+          field("redir", prec.right(10, $.redirection)),
+          field("flag", prec.right(9, $._flag)),
+          field("arg", prec.right(8, $._value)),
+          field("arg", prec.right(8, $.val_range)),
+          field("arg", prec.right(7, $.expr_parenthesized)),
+          // lowest precedence to make it a last resort
+          field("arg_str", alias($.unquoted, $.val_string)),
+        ),
       ),
 
     redirection: ($) =>
