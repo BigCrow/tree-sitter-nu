@@ -104,6 +104,12 @@ static inline bool scan_raw_string_end(Scanner *scanner, TSLexer *lexer) {
     for (unsigned i = 0; i < scanner->opening_hash_count; ++i) {
         advance(lexer);
     }
+
+    // Nushell in contrast to rust do not allow for a comment right after a raw
+    // string.
+    if (lexer->lookahead == '#')
+        return false;
+
     lexer->result_symbol = RAW_STRING_LITERAL_END;
     return true;
 }
