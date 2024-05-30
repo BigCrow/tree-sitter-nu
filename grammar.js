@@ -1145,10 +1145,7 @@ module.exports = grammar({
       ),
 
     _list_item_starts_with_sign: (_$) =>
-      seq(
-        choice(token(OPR().minus), token(OPR().plus)),
-        token.immediate(/[^\s\n\t\r{}()\[\]"`';]*/),
-      ),
+      choice(token(OPR().minus), token(OPR().plus)),
 
     val_record: ($) =>
       seq(
@@ -1641,7 +1638,7 @@ function _unquoted_rule(in_list) {
           $._immediate_decimal,
           token.immediate(PUNC().dot),
           $._immediate_decimal,
-          repeat(seq(PUNC().dot, /\d/)), // Fix grabbing mulitple lines
+          repeat(seq(PUNC().dot, /\d+/)), // Fix grabbing mulitple lines
         ),
       ),
     );
