@@ -7,6 +7,13 @@ module.exports = grammar({
 
   extras: ($) => [/\s/, $.comment],
 
+  externals: ($) => [
+    $._raw_string_literal_start,
+    $.raw_string_literal_content,
+    $._raw_string_literal_end,
+    $._error_sentinel,
+  ],
+
   conflicts: ($) => [
     [$._declaration, $._declaration_last],
     [$._declaration_parenthesized, $._declaration_parenthesized_last],
