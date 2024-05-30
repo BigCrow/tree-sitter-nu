@@ -45,10 +45,61 @@ void tree_sitter_nu_external_scanner_deserialize(void *payload,
 }
 
 // Utility functions
+// Lexer movement
 
 static inline void advance(TSLexer *lexer) { lexer->advance(lexer, false); }
 
 static inline void skip(TSLexer *lexer) { lexer->advance(lexer, true); }
+
+// Regex functions
+// used for case insensitivity
+static inline int32_t upper_case(int32_t letter) {
+    if (letter > 96)
+        return letter - 32;
+    return letter;
+};
+
+static inline bool test_word(TSLexer *lexer, const char *word,
+                             bool case_sensitivity) {
+    int length = 0;
+    while (word[length] != '\0') {
+        length++;
+    }
+    if (!case_sensitivity) {
+        for (int i = 0; i < length; ++i) {
+            if (upper_case(lexer->lookahead) != upper_case(word[i]))
+                return false;
+            advance(lexer);
+        };
+    } else {
+        for (int i = 0; i < length; ++i) {
+            if (lexer->lookahead != word[i])
+                return false;
+            advance(lexer);
+        };
+    };
+    return true;
+}
+
+static inline bool test_char_range(int32_t chr, const char *range) {
+    int length = 0;
+    while (range[length] != '\0') {
+        length++;
+    }
+
+    bool res = false;
+    for (int i = 0; i < length; ++i) {
+        if (chr == range[i]) {
+            res = true;
+            break;
+        }
+    };
+    return res;
+}
+
+static inline bool common_terminator(TSLexer *lexer) {
+    return test_char_range(lexer->lookahead, ",; \n");
+}
 
 // Raw string functions
 
