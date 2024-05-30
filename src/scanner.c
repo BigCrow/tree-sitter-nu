@@ -119,13 +119,17 @@ static inline bool scan_raw_string_end(Scanner *scanner, TSLexer *lexer) {
 
 // Comment
 
-static inline bool scan_comment(TSLexer *lexer) {
+static inline bool scan_comment(TSLexer *lexer, bool start_of_line) {
     while (lexer->lookahead == ' ')
         skip(lexer);
 
     if (lexer->lookahead != '#')
         return false;
     advance(lexer);
+
+    // This is a shebang
+    if (start_of_line && lexer->lookahead == '!')
+        return false;
 
     while (lexer->lookahead != '\n' && !lexer->eof(lexer)) {
         advance(lexer);
@@ -175,9 +179,10 @@ bool tree_sitter_nu_external_scanner_scan(void *payload, TSLexer *lexer,
         return scan_raw_string_end(scanner, lexer);
     }
 
-    if (valid_symbols[COMMENT] &&
-        (lexer->lookahead == ' ' || lexer->get_column(lexer) == 0)) {
-        return scan_comment(lexer);
+    bool start_of_line = (lexer->get_column(lexer) == 0);
+
+    if (valid_symbols[COMMENT] && (lexer->lookahead == ' ' || start_of_line)) {
+        return scan_comment(lexer, start_of_line);
     }
 
     return false;
