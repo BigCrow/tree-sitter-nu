@@ -10,6 +10,7 @@ module.exports = grammar({
   externals: ($) => [
     $.comment,
     $.math_keyword,
+    $._math_sign,
     $._raw_string_literal_start,
     $.raw_string_literal_content,
     $._raw_string_literal_end,
@@ -1144,8 +1145,8 @@ module.exports = grammar({
         $.expr_parenthesized,
       ),
 
-    _list_item_starts_with_sign: (_$) =>
-      choice(token(OPR().minus), token(OPR().plus)),
+    _list_item_starts_with_sign: ($) =>
+      choice($._math_sign, /[+-][^-$\s\n\t\r{}()\[\]"`';,]+/),
 
     val_record: ($) =>
       seq(
@@ -1162,7 +1163,7 @@ module.exports = grammar({
     ),
 
     _entry_separator: (_$) =>
-      token(prec(20, choice(PUNC().comma, /\s/, /[\r\n]/))),
+      token.immediate(prec(20, choice(PUNC().comma, /\s/, /[\r\n]/))),
 
     record_entry: ($) =>
       seq(

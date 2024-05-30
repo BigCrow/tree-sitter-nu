@@ -9,6 +9,7 @@
 enum TokenType {
     COMMENT,
     MATH_KEYWORD,
+    MATH_SIGN,
     RAW_STRING_LITERAL_START,
     RAW_STRING_LITERAL_CONTENT,
     RAW_STRING_LITERAL_END,
@@ -223,6 +224,20 @@ static inline bool scan_nan(TSLexer *lexer) {
     return true;
 }
 
+// Math signs + -
+
+static inline bool math_opr(TSLexer *lexer) {
+    if (!test_char_range(lexer->result_symbol, "+-"))
+        return false;
+
+    if (!common_terminator(lexer))
+        return false;
+
+    advance(lexer);
+    lexer->result_symbol = MATH_SIGN;
+    return true;
+}
+
 // Tree-sitter scanner object
 
 bool tree_sitter_nu_external_scanner_scan(void *payload, TSLexer *lexer,
@@ -264,8 +279,6 @@ bool tree_sitter_nu_external_scanner_scan(void *payload, TSLexer *lexer,
         return scan_raw_string_end(scanner, lexer);
     }
 
-    bool start_of_line = (lexer->get_column(lexer) == 0);
-
     if (valid_symbols[MATH_KEYWORD] &&
         test_char_range(lexer->lookahead, "+-iI")) {
         return scan_inf(lexer);
@@ -274,6 +287,12 @@ bool tree_sitter_nu_external_scanner_scan(void *payload, TSLexer *lexer,
         test_char_range(lexer->lookahead, "nN")) {
         return scan_nan(lexer);
     }
+
+    if (valid_symbols[MATH_SIGN] && test_char_range(lexer->lookahead, "+-")) {
+        return scan_nan(lexer);
+    }
+
+    bool start_of_line = (lexer->get_column(lexer) == 0);
 
     if (valid_symbols[COMMENT] && (lexer->lookahead == ' ' || start_of_line)) {
         return scan_comment(lexer, start_of_line);
