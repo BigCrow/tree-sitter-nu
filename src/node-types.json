@@ -2515,6 +2515,10 @@
         {
           "type": "escape_sequence",
           "named": true
+        },
+        {
+          "type": "raw_string_literal",
+          "named": true
         }
       ]
     }
@@ -3605,6 +3609,21 @@
     }
   },
   {
+    "type": "raw_string_literal",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": false,
+      "required": true,
+      "types": [
+        {
+          "type": "raw_string_literal_content",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
     "type": "record_body",
     "named": true,
     "fields": {
@@ -4679,6 +4698,10 @@
         {
           "type": "escape_sequence",
           "named": true
+        },
+        {
+          "type": "raw_string_literal",
+          "named": true
         }
       ]
     }
@@ -5735,6 +5758,10 @@
   {
     "type": "range",
     "named": false
+  },
+  {
+    "type": "raw_string_literal_content",
+    "named": true
   },
   {
     "type": "record",

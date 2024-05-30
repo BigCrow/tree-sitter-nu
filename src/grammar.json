@@ -9064,6 +9064,27 @@
         {
           "type": "SYMBOL",
           "name": "_str_back_ticks"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "raw_string_literal"
+        }
+      ]
+    },
+    "raw_string_literal": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "SYMBOL",
+          "name": "_raw_string_literal_start"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "raw_string_literal_content"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "_raw_string_literal_end"
         }
       ]
     },
@@ -11639,7 +11660,24 @@
     ]
   ],
   "precedences": [],
-  "externals": [],
+  "externals": [
+    {
+      "type": "SYMBOL",
+      "name": "_raw_string_literal_start"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "raw_string_literal_content"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "_raw_string_literal_end"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "_error_sentinel"
+    }
+  ],
   "inline": [],
   "supertypes": []
 }
