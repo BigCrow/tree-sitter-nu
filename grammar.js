@@ -1011,7 +1011,19 @@ module.exports = grammar({
       ),
 
     val_string: ($) =>
-      choice($._str_double_quotes, $._str_single_quotes, $._str_back_ticks),
+      choice(
+        $._str_double_quotes,
+        $._str_single_quotes,
+        $._str_back_ticks,
+        $.raw_string_literal,
+      ),
+
+    raw_string_literal: ($) =>
+      seq(
+        $._raw_string_literal_start,
+        $.raw_string_literal_content,
+        $._raw_string_literal_end,
+      ),
 
     _str_double_quotes: ($) =>
       seq(
