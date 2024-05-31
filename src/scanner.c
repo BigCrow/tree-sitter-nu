@@ -246,10 +246,6 @@ bool tree_sitter_nu_external_scanner_scan(void *payload, TSLexer *lexer,
       then check whether that token is marked valid to determine whether
       Tree-sitter is in error correction mode.
     */
-    if (valid_symbols[ERROR_SENTINEL]) {
-        return false;
-    }
-
     Scanner *scanner = (Scanner *)payload;
 
     if (valid_symbols[RAW_STRING_LITERAL_START] && (lexer->lookahead == 'r')) {
@@ -278,6 +274,10 @@ bool tree_sitter_nu_external_scanner_scan(void *payload, TSLexer *lexer,
 
     if (valid_symbols[COMMENT] && (lexer->lookahead == ' ' || start_of_line)) {
         return scan_comment(lexer, start_of_line);
+    }
+
+    if (valid_symbols[ERROR_SENTINEL]) {
+        return false;
     }
 
     return false;
