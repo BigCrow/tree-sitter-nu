@@ -1503,38 +1503,21 @@ function _block_body_rules(suffix) {
  * @param {boolean} immediate
  */
 function _decimal_rule(immediate) {
-  const exponent = token.immediate(/[eE][-+]?[\d_]*\d[\d_]*/);
-  const digits = token.immediate(/[\d_]*\d[\d_]*/);
+  const exponent = /[eE][-+]?[\d_]*\d[\d_]*/;
+  const digits = /[\d_]*\d[\d_]*/;
   const head_token = immediate ? token.immediate : token;
 
   return (/** @type {any} */ _$) =>
     choice(
-      seq(head_token(/[\d_]*\d[\d_]*/), optional(exponent)),
-      seq(
-        choice(head_token(OPR().minus), head_token(OPR().plus)),
-        digits,
-        optional(exponent),
-      ),
-      seq(
-        head_token(/[\d_]*\d[\d_]*/),
-        token.immediate(PUNC().dot),
-        optional(digits),
-        optional(exponent),
-      ),
-      seq(
-        choice(head_token(OPR().minus), head_token(OPR().plus)),
-        digits,
-        token.immediate(PUNC().dot),
-        optional(digits),
-        optional(exponent),
-      ),
-      seq(head_token(PUNC().dot), digits, optional(exponent)),
-      seq(
-        choice(head_token(OPR().minus), head_token(OPR().plus)),
-        optional(token.immediate(/_+/)),
-        token.immediate(PUNC().dot),
-        digits,
-        optional(exponent),
+      head_token(concatRegexp(/[+-]?/, /\.?/, digits, optionalRegex(exponent))),
+      head_token(
+        concatRegexp(
+          /[+-]?/,
+          /[\d_]+/,
+          /\./,
+          optionalRegex(digits),
+          optionalRegex(exponent),
+        ),
       ),
     );
 }
