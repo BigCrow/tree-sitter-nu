@@ -56,7 +56,7 @@ static inline void skip(TSLexer *lexer) { lexer->advance(lexer, true); }
 // Regex functions
 // used for case insensitivity
 static inline int32_t upper_case(int32_t letter) {
-    if (letter > 96)
+    if (letter > 96 || letter < 123)
         return letter - 32;
     return letter;
 };
