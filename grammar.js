@@ -1546,51 +1546,33 @@ function _unquoted_rule(in_list) {
         token(prec(-69, pattern)),
 
         // distinguish between unquoted and val_range in cmd_arg
-        seq(
-          token(PUNC().dot),
-          token.immediate(pattern_with_dot),
-          token.immediate(pattern_repeat1),
-        ),
-        seq(
-          token(PUNC().dot),
-          token.immediate(PUNC().dot),
-          token.immediate(pattern_with_le),
-          token.immediate(pattern_repeat),
-        ),
-        seq(
-          token(PUNC().dot),
-          token.immediate(PUNC().dot),
-          token.immediate(PUNC().eq),
-          token.immediate(pattern_with_dollar),
-          token.immediate(pattern_repeat),
-        ),
-        seq(
-          token(PUNC().dot),
-          token.immediate(PUNC().dot),
-          token.immediate(BRACK().open_angle),
-          token.immediate(pattern_with_dollar),
-          token.immediate(pattern_repeat),
-        ),
-        seq(
-          token(PUNC().dot),
-          token.immediate(PUNC().dot),
-          token.immediate(PUNC().dot),
-          token.immediate(pattern_repeat),
-        ),
-        seq(
-          token(PUNC().dot),
-          token.immediate(PUNC().dot),
-          choice(
-            token.immediate(PUNC().eq),
-            token.immediate(BRACK().open_angle),
+        token(PUNC().dot),
+        token(seq(PUNC().dot, pattern_with_dot, pattern_repeat1)),
+        token(seq(PUNC().dot, PUNC().dot, pattern_with_le, pattern_repeat)),
+        token(
+          seq(
+            PUNC().dot,
+            PUNC().dot,
+            PUNC().eq,
+            pattern_with_dollar,
+            pattern_repeat,
           ),
         ),
-        seq(
-          token(PUNC().dot),
-          token.immediate(PUNC().dot),
-          optional(token.immediate(pattern_once)),
+        token(
+          seq(
+            PUNC().dot,
+            PUNC().dot,
+            BRACK().open_angle,
+            pattern_with_dollar,
+            pattern_repeat,
+          ),
         ),
-        seq(token(PUNC().dot), optional(token.immediate(pattern_with_dot))),
+        token(seq(PUNC().dot, PUNC().dot, PUNC().dot, pattern_repeat)),
+        token(
+          seq(PUNC().dot, PUNC().dot, choice(PUNC().eq, BRACK().open_angle)),
+        ),
+        token(seq(PUNC().dot, PUNC().dot, optional(pattern_once))),
+        token(seq(PUNC().dot, optional(pattern_with_dot))),
 
         // distinguish between $.val_number and unquoted string starting with numeric characters
         seq(
