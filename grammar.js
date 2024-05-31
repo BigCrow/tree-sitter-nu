@@ -1901,3 +1901,22 @@ function FLAT_TYPES() {
 
   return choice(...types);
 }
+
+function concatRegexp() {
+  const regexps = Array.prototype.slice.call(arguments);
+  let flags = "";
+  let sources = "";
+  regexps.forEach((/** @param {RegExp} reg */ reg) => {
+    sources += reg.source;
+    flags += reg.flags;
+  });
+  flags = Array.from(new Set(flags.split(""))).join();
+  return new RegExp(sources, flags);
+}
+
+/**
+ * @param {RegExp} reg
+ */
+function optionalRegex(reg) {
+  return new RegExp("(" + reg.source + ")?", reg.flags);
+}
