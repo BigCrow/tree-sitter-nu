@@ -224,20 +224,6 @@ static inline bool scan_nan(TSLexer *lexer) {
     return true;
 }
 
-// Math signs + -
-
-static inline bool math_opr(TSLexer *lexer) {
-    if (!test_char_range(lexer->result_symbol, "+-"))
-        return false;
-
-    if (!common_terminator(lexer))
-        return false;
-
-    advance(lexer);
-    lexer->result_symbol = MATH_SIGN;
-    return true;
-}
-
 // Tree-sitter scanner object
 
 bool tree_sitter_nu_external_scanner_scan(void *payload, TSLexer *lexer,
@@ -285,10 +271,6 @@ bool tree_sitter_nu_external_scanner_scan(void *payload, TSLexer *lexer,
     }
     if (valid_symbols[MATH_KEYWORD] &&
         test_char_range(lexer->lookahead, "nN")) {
-        return scan_nan(lexer);
-    }
-
-    if (valid_symbols[MATH_SIGN] && test_char_range(lexer->lookahead, "+-")) {
         return scan_nan(lexer);
     }
 

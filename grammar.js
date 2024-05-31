@@ -10,7 +10,6 @@ module.exports = grammar({
   externals: ($) => [
     $.comment,
     $.math_keyword,
-    $._math_sign,
     $._raw_string_literal_start,
     $.raw_string_literal_content,
     $._raw_string_literal_end,
@@ -29,8 +28,6 @@ module.exports = grammar({
     [$.block, $.val_record],
     [$.block, $.val_closure],
     [$.decl_module],
-    [$._val_number_decimal],
-    [$._immediate_decimal],
     [$.expr_parenthesized],
     [$.val_variable],
     [$._expression, $._expr_binary_expression],
@@ -39,6 +36,7 @@ module.exports = grammar({
     [$._match_pattern_list, $.val_list],
     [$._match_pattern_record, $.val_record],
     [$._match_pattern_record_variable, $._value],
+    [$.val_entry, $._match_pattern_list],
   ],
 
   rules: {
@@ -789,16 +787,7 @@ module.exports = grammar({
     },
 
     _expr_unary_minus: ($) =>
-      seq(
-        token(OPR().minus),
-        seq(
-          // ensure the expression immediately follows the
-          // opening paren
-          token.immediate(BRACK().open_paren),
-          $._block_body,
-          BRACK().close_paren,
-        ),
-      ),
+      seq(token(/-\(/), $._block_body, BRACK().close_paren),
 
     expr_binary: ($) =>
       choice(
@@ -1115,7 +1104,7 @@ module.exports = grammar({
     val_list: ($) =>
       seq(
         BRACK().open_brack,
-        optional($.list_body),
+        prec(20, optional($.list_body)),
         BRACK().close_brack,
         optional($.cell_path),
       ),
@@ -1123,17 +1112,14 @@ module.exports = grammar({
     list_body: general_body_rules("entry", "val_entry", "_entry_separator"),
 
     val_entry: ($) =>
-      prec(
-        10,
-        field(
-          "item",
-          choice(
-            $._list_item_expression,
-            alias($._unquoted_in_list, $.val_string),
-            alias($.short_flag, $.val_string),
-            alias($.long_flag, $.val_string),
-            alias($._list_item_starts_with_sign, $.val_string),
-          ),
+      field(
+        "item",
+        choice(
+          $._list_item_expression,
+          alias($._unquoted_in_list, $.val_string),
+          alias($.short_flag, $.val_string),
+          alias($.long_flag, $.val_string),
+          alias($._list_item_starts_with_sign, $.val_string),
         ),
       ),
 
@@ -1145,8 +1131,8 @@ module.exports = grammar({
         $.expr_parenthesized,
       ),
 
-    _list_item_starts_with_sign: ($) =>
-      choice($._math_sign, /[+-][^-$\s\n\t\r{}()\[\]"`';,]+/),
+    _list_item_starts_with_sign: (_$) =>
+      choice(/[+-]([^-$\s\n\t\r{}()\[\]"`';,]+)?/),
 
     val_record: ($) =>
       seq(
@@ -1300,16 +1286,15 @@ module.exports = grammar({
 
     _flag: ($) => prec.right(5, choice($.short_flag, $.long_flag)),
 
-    short_flag: (_$) =>
-      seq(token(OPR().minus), token.immediate(/[_\p{XID_Continue}]+/)),
+    short_flag: (_$) => token(seq(OPR().minus, /[_\p{XID_Continue}]+/)),
 
     long_flag: ($) =>
       prec.right(
         10,
         choice(
-          alias(seq(token(OPR().minus), token.immediate(OPR().minus)), "--"),
+          alias(token(seq(OPR().minus, OPR().minus)), "--"),
           seq(
-            alias(seq(token(OPR().minus), token.immediate(OPR().minus)), "--"),
+            alias(token(seq(OPR().minus, OPR().minus)), "--"),
             $._long_flag_identifier,
           ),
         ),
@@ -1527,7 +1512,7 @@ function _decimal_rule(immediate) {
  */
 function _unquoted_rule(in_list) {
   const pattern = in_list
-    ? /[^-$\s\n\t\r{}()\[\]"`';,][^\s\n\t\r{}()\[\]"`';,]*/
+    ? /[^$\s\n\t\r{}()\[\]"`';,][^\s\n\t\r{}()\[\]"`';,]*/
     : /[^-$\s\n\t\r{}()\[\]"`';][^\s\n\t\r{}()\[\]"`';]*/;
   const pattern_repeat = in_list
     ? /[^\s\n\t\r{}()\[\]"`';,]*/
@@ -1558,7 +1543,7 @@ function _unquoted_rule(in_list) {
     prec.left(
       -69,
       choice(
-        token(prec(-69, token(pattern))),
+        token(prec(-69, pattern)),
 
         // distinguish between unquoted and val_range in cmd_arg
         seq(
@@ -1609,7 +1594,7 @@ function _unquoted_rule(in_list) {
 
         // distinguish between $.val_number and unquoted string starting with numeric characters
         seq(
-          choice($._val_number_decimal),
+          $._val_number_decimal,
           token.immediate(pattern_once),
           token.immediate(pattern_repeat),
         ),
@@ -1620,9 +1605,6 @@ function _unquoted_rule(in_list) {
           $._val_number_decimal,
           token.immediate(PUNC().dot),
           $._immediate_decimal,
-          token.immediate(PUNC().dot),
-          $._immediate_decimal,
-          repeat(seq(PUNC().dot, /\d+/)), // Fix grabbing mulitple lines
         ),
       ),
     );
