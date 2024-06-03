@@ -570,10 +570,15 @@ module.exports = grammar({
           $.where_command,
           $.command,
         ),
-        // Allow for empty pipeline elements like `ls | | print`
-        repeat1(seq(optional("\n"), PUNC().pipe)),
-        optional("\n"),
       ),
+
+    _pipe_element_separator: (_$) => token(PUNC().pipe),
+
+    pipe_body: general_body_rules(
+      "pipe_element",
+      "pipe_element",
+      "_pipe_element_separator",
+    ),
 
     pipe_element_parenthesized: ($) =>
       seq(
@@ -1356,13 +1361,7 @@ function block_body_rules(suffix, terminator) {
     /// pipeline
 
     [`pipeline${suffix}`]: (/** @type {any} */ $) =>
-      prec.right(
-        seq(
-          repeat($.pipe_element),
-          alias($.pipe_element_last, $.pipe_element),
-          terminator($),
-        ),
-      ),
+      prec.right(20, seq($.pipe_body, terminator($))),
   };
 }
 
