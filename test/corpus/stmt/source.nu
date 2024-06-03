@@ -59,7 +59,7 @@ source ('file.nu')
   (stmt_source
     (expr_parenthesized
       (pipeline
-        (pipe_element
+        (pipe_element_parenthesized
           (val_string))))))
 
 =====
