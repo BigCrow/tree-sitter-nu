@@ -23,8 +23,6 @@ module.exports = grammar({
     [$._statement_parenthesized, $._statement_parenthesized_last],
     [$.pipeline, $.pipeline_last],
     [$.pipeline_parenthesized, $.pipeline_parenthesized_last],
-    [$.pipe_element, $.pipe_element_last],
-    [$.pipe_element_parenthesized, $.pipe_element_parenthesized_last],
     [$.block, $.val_record],
     [$.block, $.val_closure],
     [$.decl_module],
@@ -569,6 +567,7 @@ module.exports = grammar({
           $._ctrl_expression,
           $.where_command,
           $.command,
+          /\s/, // For | | pipes
         ),
       ),
 
@@ -587,22 +586,15 @@ module.exports = grammar({
           $._ctrl_expression_parenthesized,
           $.where_command,
           alias($._command_parenthesized_body, $.command),
+          /\s/, // For | | pipes
         ),
-        // Allow for empty pipeline elements like `ls | | print`
-        repeat1(seq(optional("\n"), PUNC().pipe)),
-        optional("\n"),
       ),
 
-    pipe_element_last: ($) =>
-      choice($._expression, $._ctrl_expression, $.where_command, $.command),
-
-    pipe_element_parenthesized_last: ($) =>
-      choice(
-        $._expression,
-        $._ctrl_expression_parenthesized,
-        $.where_command,
-        alias($._command_parenthesized_body, $.command),
-      ),
+    pipe_body_parenthesized: general_body_rules(
+      "pipe_element_parenthesized",
+      "pipe_element_parenthesized",
+      "_pipe_element_separator",
+    ),
 
     /// Scope Statements
 
@@ -1338,15 +1330,8 @@ function parenthesized_body_rules(suffix, terminator) {
     /// pipeline
 
     [`pipeline${parenthesized}${suffix}`]: (
-      /** @type {{ pipe_element_parenthesized: RuleOrLiteral; pipe_element: string; pipe_element_parenthesized_last: RuleOrLiteral; }} */ $,
-    ) =>
-      prec.right(
-        seq(
-          repeat(alias($.pipe_element_parenthesized, $.pipe_element)),
-          alias($.pipe_element_parenthesized_last, $.pipe_element),
-          terminator($),
-        ),
-      ),
+      /** @type {{ pipe_body_parenthesized: RuleOrLiteral; }} */ $,
+    ) => prec.right(seq($.pipe_body_parenthesized, terminator($))),
   };
 }
 
