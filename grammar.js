@@ -1512,26 +1512,26 @@ function _decimal_rule(immediate) {
  */
 function _unquoted_rule(in_list) {
   const pattern = in_list
-    ? /[^$\s\n\t\r{}()\[\]"`';,][^\s\n\t\r{}()\[\]"`';,]*/
-    : /[^-$\s\n\t\r{}()\[\]"`';][^\s\n\t\r{}()\[\]"`';]*/;
+    ? /[^$\s\n\t\r{}()\[\]"`';,\|][^\s\n\t\r{}()\[\]"`';,]\|*/
+    : /[^-$\s\n\t\r{}()\[\]"`';]\|[^\s\n\t\r{}()\[\]"`';]\|*/;
   const pattern_repeat = in_list
-    ? /[^\s\n\t\r{}()\[\]"`';,]*/
-    : /[^\s\n\t\r{}()\[\]"`';]*/;
+    ? /[^\s\n\t\r{}()\[\]"`';,\|]*/
+    : /[^\s\n\t\r{}()\[\]"`';\|]*/;
   const pattern_repeat1 = in_list
-    ? /[^\s\n\t\r{}()\[\]"`';,]+/
-    : /[^\s\n\t\r{}()\[\]"`';]+/;
+    ? /[^\s\n\t\r{}()\[\]"`';,\|]+/
+    : /[^\s\n\t\r{}()\[\]"`';\|]+/;
   const pattern_once = in_list
-    ? /[^\s\n\t\r{}()\[\]"`';,]/
-    : /[^\s\n\t\r{}()\[\]"`';]/;
+    ? /[^\s\n\t\r{}()\[\]"`';,\|]/
+    : /[^\s\n\t\r{}()\[\]"`';\|]/;
   const pattern_with_dot = in_list
-    ? /[^\s\n\t\r{}()\[\]"`';,.]/
-    : /[^\s\n\t\r{}()\[\]"`';.]/;
+    ? /[^\s\n\t\r{}()\[\]"`';,.\|]/
+    : /[^\s\n\t\r{}()\[\]"`';.\|]/;
   const pattern_with_le = in_list
-    ? /[^\s\n\t\r{}()\[\]"`';,=<]/
-    : /[^\s\n\t\r{}()\[\]"`';=<]/;
+    ? /[^\s\n\t\r{}()\[\]"`';,=<\|]/
+    : /[^\s\n\t\r{}()\[\]"`';=<\|]/;
   const pattern_with_dollar = in_list
-    ? /[^\s\n\t\r{}()\[\]"`';,$]/
-    : /[^\s\n\t\r{}()\[\]"`';$]/;
+    ? /[^\s\n\t\r{}()\[\]"`';,$\|]/
+    : /[^\s\n\t\r{}()\[\]"`';$\|]/;
 
   // because this catches almost anything, we want to ensure it is
   // picked as the a last resort after everything else has failed.
