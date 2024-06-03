@@ -1511,8 +1511,8 @@ function _decimal_rule(immediate) {
  */
 function _unquoted_rule(in_list) {
   const pattern = in_list
-    ? /[^$\s\n\t\r{}()\[\]"`';,\|][^\s\n\t\r{}()\[\]"`';,]\|*/
-    : /[^-$\s\n\t\r{}()\[\]"`';]\|[^\s\n\t\r{}()\[\]"`';]\|*/;
+    ? /[^$\s\n\t\r{}()\[\]"`';,\|][^\s\n\t\r{}()\[\]"`';,\|]*/
+    : /[^-$\s\n\t\r{}()\[\]"`';\|][^\s\n\t\r{}()\[\]"`';\|]*/;
   const pattern_repeat = in_list
     ? /[^\s\n\t\r{}()\[\]"`';,\|]*/
     : /[^\s\n\t\r{}()\[\]"`';\|]*/;
