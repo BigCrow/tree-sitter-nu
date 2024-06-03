@@ -572,11 +572,7 @@ module.exports = grammar({
 
     _pipe_element_separator: (_$) => token(seq(/\s*/, PUNC().pipe)),
 
-    pipe_body: general_body_rules(
-      "pipe_element",
-      "pipe_element",
-      "_pipe_element_separator",
-    ),
+    _pipe_body: pipe_body_rules("pipe_element", "_pipe_element_separator"),
 
     pipe_element_parenthesized: ($) =>
       seq(
@@ -588,8 +584,7 @@ module.exports = grammar({
         ),
       ),
 
-    pipe_body_parenthesized: general_body_rules(
-      "pipe_element_parenthesized",
+    _pipe_body_parenthesized: pipe_body_rules(
       "pipe_element_parenthesized",
       "_pipe_element_separator",
     ),
@@ -1317,6 +1312,22 @@ function general_body_rules(field_name, entry, separator) {
 }
 
 /**
+ * @param {string} element
+ * @param {string} separator
+ */
+function pipe_body_rules(element, separator) {
+  return (/** @type {{ [x: string]: RuleOrLiteral; }} */ $) =>
+    prec(
+      20,
+      seq(
+        // Diferent structure to general with optional element is used for | | structure
+        repeat(seq(optional($[element]), $[separator])), // Normal entries MUST have a separator
+        seq($[element], optional($[separator])), // Final element may or may not have separator
+      ),
+    );
+}
+
+/**
  * @param {string} suffix
  * @param {{ (_$: any): string; (_$: any): ChoiceRule; (arg0: any): RuleOrLiteral; }} terminator
  */
@@ -1328,8 +1339,8 @@ function parenthesized_body_rules(suffix, terminator) {
     /// pipeline
 
     [`pipeline${parenthesized}${suffix}`]: (
-      /** @type {{ pipe_body_parenthesized: RuleOrLiteral; }} */ $,
-    ) => prec.right(seq($.pipe_body_parenthesized, terminator($))),
+      /** @type {{ _pipe_body_parenthesized: RuleOrLiteral; }} */ $,
+    ) => prec.right(seq($._pipe_body_parenthesized, terminator($))),
   };
 }
 
@@ -1344,7 +1355,7 @@ function block_body_rules(suffix, terminator) {
     /// pipeline
 
     [`pipeline${suffix}`]: (/** @type {any} */ $) =>
-      prec.right(20, seq($.pipe_body, terminator($))),
+      prec.right(20, seq($._pipe_body, terminator($))),
   };
 }
 
