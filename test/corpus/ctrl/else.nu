@@ -82,7 +82,7 @@ if true {} else ^('ls')
         else_block: (command
           head: (expr_parenthesized
             (pipeline
-              (pipe_element
+              (pipe_element_parenthesized
                 (val_string)))))))))
 
 =====
