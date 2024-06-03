@@ -567,7 +567,6 @@ module.exports = grammar({
           $._ctrl_expression,
           $.where_command,
           $.command,
-          /\s/, // For | | pipes
         ),
       ),
 
@@ -586,7 +585,6 @@ module.exports = grammar({
           $._ctrl_expression_parenthesized,
           $.where_command,
           alias($._command_parenthesized_body, $.command),
-          /\s/, // For | | pipes
         ),
       ),
 
