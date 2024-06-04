@@ -570,7 +570,8 @@ module.exports = grammar({
         ),
       ),
 
-    _pipe_element_separator: (_$) => token(seq(/\s*/, PUNC().pipe)),
+    _pipe_element_separator: (_$) =>
+      token(seq(/\s*/, PUNC().pipe, /\s*\n?\s*/)),
 
     _pipe_body: pipe_body_rules("pipe_element", "_pipe_element_separator"),
 
