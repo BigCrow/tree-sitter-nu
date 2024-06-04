@@ -55,7 +55,7 @@ values-002-booleans
           (val_entry
             (expr_parenthesized
               (pipeline
-                (pipe_element
+                (pipe_element_parenthesized
                   (expr_unary
                     (val_bool)))))))))))
 

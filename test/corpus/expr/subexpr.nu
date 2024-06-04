@@ -11,7 +11,7 @@ subexpr-001-command
     (pipe_element
       (expr_parenthesized
         (pipeline
-          (pipe_element
+          (pipe_element_parenthesized
             (command
               (cmd_identifier)
               (val_string))))))))
@@ -34,7 +34,7 @@ subexpr-002-multiline-command
     (pipe_element
       (expr_parenthesized
         (pipeline
-          (pipe_element
+          (pipe_element_parenthesized
             (command
               (cmd_identifier)
               (val_string)
@@ -54,10 +54,10 @@ subexpr-003-pipeline
     (pipe_element
       (expr_parenthesized
         (pipeline
-          (pipe_element
+          (pipe_element_parenthesized
             (command
               (cmd_identifier)))
-          (pipe_element
+          (pipe_element_parenthesized
             (where_command
               (val_string)
               (val_filesize
@@ -82,13 +82,13 @@ subexpr-004-pipeline-multiline
     (pipe_element
       (expr_parenthesized
         (pipeline
-          (pipe_element
+          (pipe_element_parenthesized
             (command
               (cmd_identifier)
               (val_string)
               (val_string)
               (val_string)))
-          (pipe_element
+          (pipe_element_parenthesized
             (command
               (cmd_identifier)
               (val_string)
@@ -110,7 +110,7 @@ let xs = (echo one two)
       (pipe_element
         (expr_parenthesized
           (pipeline
-            (pipe_element
+            (pipe_element_parenthesized
               (command
                 (cmd_identifier)
                 (val_string)
@@ -151,7 +151,7 @@ subexpr-007-path
     (pipe_element
       (expr_parenthesized
         (pipeline
-          (pipe_element
+          (pipe_element_parenthesized
             (command
               (cmd_identifier))))
         (cell_path
@@ -173,10 +173,10 @@ echo $a)
         (stmt_let
           (identifier)
           (pipeline
-            (pipe_element
+            (pipe_element_parenthesized
               (val_string))))
         (pipeline
-          (pipe_element
+          (pipe_element_parenthesized
             (command
               (cmd_identifier)
               (val_variable
@@ -320,17 +320,17 @@ catch { echo 'bar' }
     (pipe_element
       (expr_parenthesized
         (pipeline
-          (pipe_element
+          (pipe_element_parenthesized
             (ctrl_try
               (block
                 (pipeline
-                  (pipe_element
+                  (pipe_element_parenthesized
                     (command
                       (cmd_identifier)
                       (val_string)))))
               (block
                 (pipeline
-                  (pipe_element
+                  (pipe_element_parenthesized
                     (command
                       (cmd_identifier)
                       (val_string))))))))))))

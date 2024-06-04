@@ -126,14 +126,14 @@ record-006-subexpression-key
           (record_entry
             (expr_parenthesized
               (pipeline
-                (pipe_element
+                (pipe_element_parenthesized
                   (val_list
                     (list_body
                       (val_entry
                         (val_string))
                       (val_entry
                         (val_string)))))
-                (pipe_element
+                (pipe_element_parenthesized
                   (command
                     (cmd_identifier)
                     (val_string)

@@ -39,10 +39,10 @@ where-002-parenthesized
       (where_command
         (expr_parenthesized
           (pipeline
-            (pipe_element
+            (pipe_element_parenthesized
               (val_variable
                 (identifier)))
-            (pipe_element
+            (pipe_element_parenthesized
               (command
                 (cmd_identifier)
                 (val_string)

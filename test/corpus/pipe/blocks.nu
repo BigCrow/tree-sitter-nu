@@ -66,12 +66,12 @@ blocks-003-braced
     (pipe_element
       (expr_parenthesized
         (pipeline
-          (pipe_element
+          (pipe_element_parenthesized
             (command
               (cmd_identifier)
               (val_string))))
         (pipeline
-          (pipe_element
+          (pipe_element_parenthesized
             (command
               (cmd_identifier)
               (val_string))))))))
@@ -93,7 +93,7 @@ blocks-004-multiline-command
 	  (pipe_element
 		  (expr_parenthesized
 			  (pipeline
-				  (pipe_element
+				  (pipe_element_parenthesized
 					  (command
 						  (cmd_identifier)
 							(long_flag)
