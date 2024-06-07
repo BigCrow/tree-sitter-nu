@@ -161,25 +161,35 @@ values-006-infinity-number
       (val_list
         (list_body
           (val_entry
-            (val_number))
+            (val_number
+              (math_keyword)))
           (val_entry
-            (val_number))
+            (val_number
+              (math_keyword)))
           (val_entry
-            (val_number))
+            (val_number
+              (math_keyword)))
           (val_entry
-            (val_number))
+            (val_number
+              (math_keyword)))
           (val_entry
-            (val_number))
+            (val_number
+              (math_keyword)))
           (val_entry
-            (val_number))
+            (val_number
+              (math_keyword)))
           (val_entry
-            (val_number))
+            (val_number
+              (math_keyword)))
           (val_entry
-            (val_number))
+            (val_number
+              (math_keyword)))
           (val_entry
-            (val_number))
+            (val_number
+              (math_keyword)))
           (val_entry
-            (val_number)))))))
+            (val_number
+              (math_keyword))))))))
 
 =====
 values-006-not-a-number
@@ -200,10 +210,14 @@ values-006-not-a-number
       (val_list
         (list_body
           (val_entry
-            (val_number))
+            (val_number
+              (math_keyword)))
           (val_entry
-            (val_number))
+            (val_number
+              (math_keyword)))
           (val_entry
-            (val_number))
+            (val_number
+              (math_keyword)))
           (val_entry
-            (val_number)))))))
+            (val_number
+              (math_keyword))))))))
