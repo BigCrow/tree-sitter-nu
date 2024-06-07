@@ -1196,7 +1196,7 @@ module.exports = grammar({
         BRACK().open_brace,
         optional(field("parameters", $.parameter_pipes)),
         $._block_body,
-        BRACK().close_brace,
+        /\s?}/, // sometimes a space before the } could be detected as an error.
       ),
 
     /// CellPaths
