@@ -707,7 +707,11 @@ module.exports = grammar({
     /// Block
 
     block: ($) =>
-      seq(BRACK().open_brace, optional($._block_body), BRACK().close_brace),
+      seq(
+        BRACK().open_brace,
+        optional($._block_body),
+        /\s?}/, // sometimes a space before the } could be detected as an error.
+      ),
 
     _blosure: ($) => choice(prec.dynamic(10, $.block), $.val_closure),
 
