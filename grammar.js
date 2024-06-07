@@ -24,7 +24,6 @@ module.exports = grammar({
     [$.pipeline, $.pipeline_last],
     [$.pipeline_parenthesized, $.pipeline_parenthesized_last],
     [$.block, $.val_record],
-    [$.block, $.val_closure],
     [$.decl_module],
     [$.expr_parenthesized],
     [$.val_variable],
