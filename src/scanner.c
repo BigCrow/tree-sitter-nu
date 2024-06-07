@@ -55,8 +55,8 @@ static inline void skip(TSLexer *lexer) { lexer->advance(lexer, true); }
 
 // Regex functions
 // used for case insensitivity
-static inline int32_t upper_case(int32_t letter) {
-    if (letter > 96 || letter < 123)
+static inline int32_t to_upper_case(int32_t letter) {
+    if (letter > 96 && letter < 123)
         return letter - 32;
     return letter;
 };
@@ -69,7 +69,7 @@ static inline bool test_word(TSLexer *lexer, const char *word,
     }
     if (!case_sensitivity) {
         for (int i = 0; i < length; ++i) {
-            if (upper_case(lexer->lookahead) != upper_case(word[i]))
+            if (to_upper_case(lexer->lookahead) != to_upper_case(word[i]))
                 return false;
             advance(lexer);
         };
@@ -197,12 +197,12 @@ static inline bool scan_inf(TSLexer *lexer) {
     if (test_char_range(lexer->lookahead, "+-"))
         advance(lexer);
 
-    if (!test_word(lexer, "inf", false))
+    if (!test_word(lexer, "INF", false))
         return false;
 
     if (test_char_range(lexer->lookahead, "iI")) {
         advance(lexer);
-        if (!test_word(lexer, "nity", false))
+        if (!test_word(lexer, "NITY", false))
             return false;
     };
 
