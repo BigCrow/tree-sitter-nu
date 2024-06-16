@@ -24,6 +24,7 @@ module.exports = grammar({
     [$.pipeline, $.pipeline_last],
     [$.pipeline_parenthesized, $.pipeline_parenthesized_last],
     [$.block, $.val_record],
+    [$.block, $.val_closure],
     [$.decl_module],
     [$.expr_parenthesized],
     [$.val_variable],
@@ -41,7 +42,7 @@ module.exports = grammar({
 
     nu_script: ($) => seq(optional($.shebang), optional($._block_body)),
 
-    shebang: (_$) => seq("#!", /.*\n/),
+    shebang: (_$) => seq("#!", /.*[\n\r]/),
 
     ...block_body_rules("", (/** @type {any} */ $) => $._terminator),
     ...block_body_rules("_last", (/** @type {any} */ $) =>
@@ -91,7 +92,7 @@ module.exports = grammar({
         field("dollar_name", $.val_variable),
       ),
 
-    _terminator: (_$) => choice(PUNC().semicolon, "\n"),
+    _terminator: (_$) => choice(PUNC().semicolon, SPECIAL().newline),
 
     /// Top Level Items
 
@@ -384,7 +385,7 @@ module.exports = grammar({
           field("then_branch", $.block),
           optional(
             seq(
-              optional("\n"),
+              optional(SPECIAL().newline),
               KEYWORD().else,
               choice(
                 field("else_block", choice($.block, $._expression, $.command)),
@@ -531,7 +532,7 @@ module.exports = grammar({
           field("try_branch", $.block),
           optional(
             seq(
-              optional("\n"),
+              optional(SPECIAL().newline),
               KEYWORD().catch,
               field("catch_branch", $._blosure),
             ),
@@ -569,8 +570,7 @@ module.exports = grammar({
         ),
       ),
 
-    _pipe_element_separator: (_$) =>
-      token(seq(/\s*/, PUNC().pipe, optional(/[\n\r]/))),
+    _pipe_element_separator: (_$) => token(seq(/\s*\|[\n\r]?/)),
 
     _pipe_body: pipe_body_rules("pipe_element", "_pipe_element_separator"),
 
@@ -1142,8 +1142,7 @@ module.exports = grammar({
       "_entry_separator",
     ),
 
-    _entry_separator: (_$) =>
-      token.immediate(prec(20, choice(PUNC().comma, /\s/, /[\r\n]/))),
+    _entry_separator: (_$) => token.immediate(prec(20, /[, \r\n]/)),
 
     record_entry: ($) =>
       seq(
@@ -1244,23 +1243,30 @@ module.exports = grammar({
             field("head", seq(PUNC().caret, $.val_string)), // Support for ^'command' type of syntax.
             field("head", seq(PUNC().caret, $.expr_parenthesized)), // Support for pipes into external command.
           ),
-          prec.dynamic(10, repeat(seq(optional("\n"), $._cmd_arg))),
-          optional("\n"),
+          prec.dynamic(10, repeat($._cmd_arg_parenthesized)),
+          optional(SPECIAL().newline),
         ),
       ),
 
-    _cmd_arg: ($) =>
-      seq(
-        /\s/,
-        choice(
-          field("redir", prec.right(10, $.redirection)),
-          field("flag", prec.right(9, $._flag)),
-          field("arg", prec.right(8, $._value)),
-          field("arg", prec.right(8, $.val_range)),
-          field("arg", prec.right(7, $.expr_parenthesized)),
-          // lowest precedence to make it a last resort
-          field("arg_str", alias($.unquoted, $.val_string)),
-        ),
+    _cmd_arg: ($) => seq($._cmd_arg_separator, $._cmd_arg_body),
+
+    _cmd_arg_parenthesized: ($) =>
+      seq($._cmd_arg_separator_parenthesized, $._cmd_arg_body),
+
+    _cmd_arg_separator: (_$) => SPECIAL().space,
+
+    _cmd_arg_separator_parenthesized: (_$) =>
+      choice(SPECIAL().space, SPECIAL().newline),
+
+    _cmd_arg_body: ($) =>
+      choice(
+        field("redir", prec.right(10, $.redirection)),
+        field("flag", prec.right(9, $._flag)),
+        field("arg", prec.right(8, $._value)),
+        field("arg", prec.right(8, $.val_range)),
+        field("arg", prec.right(7, $.expr_parenthesized)),
+        // lowest precedence to make it a last resort
+        field("arg_str", alias($.unquoted, $.val_string)),
       ),
 
     redirection: ($) =>
@@ -1827,6 +1833,8 @@ function SPECIAL() {
     true: "true",
     false: "false",
     null: "null",
+    newline: token(/[\n\r]/),
+    space: token(/\s/),
   };
 }
 
